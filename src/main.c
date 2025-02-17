@@ -34,12 +34,17 @@ static Camera2D camera = {0};
 static HotkeyStorage hk = {0};
 static WormsEffect_t effect = NULL;
 Texture2D t = {};
+int step_count = 30, 
+    particles_count = 30;
+bool effect_draw = true;
 
 static void init(bool mt) {
     effect = worms_effect_new((WormsEffectInitOpts) { 
         .w = screen_width,
         .h = screen_height,
         .multithreads = mt,
+        .step_count = step_count,
+        .particles_count = particles_count,
     });
     t = LoadTextureFromImage(*worms_effect_bitmap(effect));
 }
@@ -63,15 +68,23 @@ static void render_gui() {
 
     static bool mt = false;
 
+    igCheckbox("draw effect", &effect_draw);
+
     if (igButton("recreate", (ImVec2){})) {
         shutdown();
         init(mt);
     }
 
+    igSameLine(0., 10.);
+
     igCheckbox("openmp", &mt);
 
-    igSliderInt("iteration_count", &opts.iteration_count, 0, 8000, "%d", ImGuiSliderFlags_Logarithmic);
+    igSliderInt("particles count", &particles_count, 0, 500, "%d", ImGuiSliderFlags_Logarithmic);
+    igSliderInt("step count", &step_count, 0, 500, "%d", ImGuiSliderFlags_Logarithmic);
 
+    igSeparator();
+
+    igSliderInt("iteration_count", &opts.iteration_count, 0, 8000, "%d", ImGuiSliderFlags_Logarithmic);
     igSliderInt("glow_size", &opts.glow_size, 0, 1000, "%d", 0);
     igSliderInt("swap_direction_rarity", &opts.swap_direction_rarity, 1, 1000, "%d", 0);
     igSliderInt("blur_iteration_count", &opts.blur_iteration_count, 0, 1000, "%d", 0);
@@ -92,8 +105,8 @@ static void update_render() {
     ClearBackground(BLACK); 
     BeginDrawing();
 
-    //paint();
-    worms_effect_draw(effect);
+    if (effect_draw)
+        worms_effect_draw(effect);
 
     void *data = worms_effect_bitmap(effect)->data;
     UpdateTexture(t, data);
@@ -124,7 +137,6 @@ int main(void) {
 
     logger_init();
     sc_init();
-    logger_register_functions();
     sc_init_script();
 
     SetTraceLogLevel(LOG_ERROR);
