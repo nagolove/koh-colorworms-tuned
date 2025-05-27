@@ -2,7 +2,6 @@
 
 #include "cimgui.h"
 #include "cimgui_impl.h"
-#include "koh_console.h"
 #include "koh_hashers.h"
 #include "koh_hotkey.h"
 #include "koh_hotkey.h"
@@ -139,16 +138,6 @@ int main(void) {
     SetTraceLogLevel(LOG_ERROR);
 
     hotkey_init(&hk);
-    console_init(&hk, &(struct ConsoleSetup) {
-        .on_enable = NULL,
-        .on_disable = NULL,
-        .udata = NULL,
-        .color_cursor = BLUE,
-        .color_text = BLACK,
-        .fnt_path = "assets/djv.ttf",
-        .fnt_size = 20,
-    });
-    console_immediate_buffer_enable(true);
 
     init(false);
 #if defined(PLATFORM_WEB)
