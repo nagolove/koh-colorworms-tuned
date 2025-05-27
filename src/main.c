@@ -7,7 +7,6 @@
 #include "koh_hotkey.h"
 #include "koh_hotkey.h"
 #include "koh_logger.h"
-#include "koh_script.h"
 #include "raylib.h"
 #include "worms_effect.h"
 #include <assert.h>
@@ -136,8 +135,6 @@ int main(void) {
     });
 
     logger_init();
-    sc_init();
-    sc_init_script();
 
     SetTraceLogLevel(LOG_ERROR);
 
@@ -155,7 +152,7 @@ int main(void) {
 
     init(false);
 #if defined(PLATFORM_WEB)
-    emscripten_set_main_loop_arg(update_render, NULL, target_fps, 1);
+    emscripten_set_main_loop_arg(update_render, NULL, 0, 1);
 #else
     while (!WindowShouldClose()) {
         update_render();
@@ -168,7 +165,6 @@ int main(void) {
     CloseWindow();
 
     hotkey_shutdown(&hk);
-    sc_shutdown();
     logger_shutdown();
 
     return 0;
